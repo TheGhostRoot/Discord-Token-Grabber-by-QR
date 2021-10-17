@@ -1,3 +1,5 @@
 {
-    "CLI_SLEEP_TIME":"10"
+    "DISCORD_WAIT_TIME":"6",
+    "CLI_SLEEP_TIME":"10",
+    "SAVE_TO_FILE":"yes"
 }

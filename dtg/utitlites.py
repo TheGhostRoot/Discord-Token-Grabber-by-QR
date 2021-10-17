@@ -2,6 +2,7 @@ import os
 import platform
 import json
 import time
+from datetime import datetime
 
 
 class OSdiff:
@@ -24,11 +25,37 @@ class Config:
     try:
         CLI_SLEEP_TIME = int(data["CLI_SLEEP_TIME"])
     except:
-        print("- Please enter a valid value for CLI_SLEEP_TIME in dtg/config.json")
+        CLI_SLEEP_TIME = 5
+        print("- Please enter a valid value for CLI_SLEEP_TIME in dtg/config.json\n- Defaulting to 5")
+
+    try:
+        DISCORD_WAIT_TIME = int(data["DISCORD_WAIT_TIME"])
+    except:
+        DISCORD_WAIT_TIME = 5
+        print("- Please enter a valid value for CLI_SLEEP_TIME in dtg/config.json\n- Defaulting to 5")
+
+    if str(data["SAVE_TO_FILE"]).lower().startswith("y"):
+        SAVE_TO_FILE = True
+    else:
+        SAVE_TO_FILE = False
 
 
 def pasue_before_destroy_cli():
     time.sleep(Config.CLI_SLEEP_TIME)
+
+
+def save_results_to_file(result: str = None):
+    if result is None:
+        print("- Result not given!")
+
+    if "results.txt" in os.listdir(os.getcwd()) == False:
+        with open("results.txt", "a", encoding="utf-8") as filem:
+            filem.wirte(f"\n{datetime.now()} - results.txt created!")
+            print("+ Created: results.txt")
+
+    with open("results.txt", "a", encoding="utf-8") as filew:
+        filew.write(f"\n{result}")
+        print("+ Added token to results.txt")
 
 
 def clear_screen():
@@ -45,7 +72,7 @@ def show_logo():
         | | | || || |  _ 
         | |_| || || |_| |
         |____/ |_| \____|
-     Discord Token Generator
+      Discord Token Grabber
          """)
 
 

