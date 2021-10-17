@@ -1,6 +1,7 @@
 import os
 import platform
 import json
+import time
 
 
 class OSdiff:
@@ -24,6 +25,10 @@ class Config:
         CLI_SLEEP_TIME = int(data["CLI_SLEEP_TIME"])
     except:
         print("- Please enter a valid value for CLI_SLEEP_TIME in dtg/config.json")
+
+
+def pasue_before_destroy_cli():
+    time.sleep(Config.CLI_SLEEP_TIME)
 
 
 def clear_screen():
