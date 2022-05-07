@@ -38,7 +38,6 @@ def main():
             executable_path = sys32_dir_file
         else:
             executable_path = None
-
     else:
         current_dir_file = os.path.join(os.getcwd(), "chromedriver")
         usrbin_file = os.path.join("usr", "bin", "chromedriver")
@@ -68,9 +67,9 @@ def main():
 
     soup = BeautifulSoup(page_source, features='lxml')
 
-    div = soup.find('div', {'class': 'qrCode-wG6ZgU'})
+    div = soup.find('div', {'class': 'qrCode-2R7t9S'})
     qr_code = div.find('img')['src']
-    file = os.path.join(os.getcwd(), 'image/qr_code.png')
+    file = os.path.join(os.getcwd(), 'image', 'qr_code.png')
 
     img_data = base64.b64decode(qr_code.replace('data:image/png;base64,', ''))
 
