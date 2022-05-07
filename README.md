@@ -1,6 +1,6 @@
 # Grab Discord Token with QR
 
-Discord Token Grabber by QR
+Grab Discord login tokens easily by scamming the victim with a fake QR code than will make you login instead of giving the victim free nitro.
 
 ### About
 
@@ -21,7 +21,7 @@ paste `chrome://settings/help` in Google Chrome.
 if Chrome crashes,
 
 1. Make sure your chromedriver.exe file is the same version as your Chrome web browser version
-2. Download the latest version chromedriver.exe here: https://chromedriver.chromium.org/downloads
+2. Download the latest version chromedriver.exe here: [Click Here](https://chromedriver.chromium.org/downloads)
 
 3. Then replace the chromedriver.exe file in the folder.
 
@@ -44,3 +44,7 @@ OR
 5. QR Code only lasts about 2 minutes. Make sure you send a fresh one to the victim and he is ready to scan.
 
 6. When the QR Code is scanned, you will automatically be logged in to their account and the script will grab the Discord token.
+
+# Note
+
+This is illegal and i am not responsible for anything done with this tool. I maintain this tool only for educational purposes
