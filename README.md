@@ -1,4 +1,4 @@
-# Discord-Token-Grabber-by-QR
+# Grab Discord Token with QR
 
 Discord Token Grabber by QR
 
