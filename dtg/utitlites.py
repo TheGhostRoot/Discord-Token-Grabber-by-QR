@@ -7,8 +7,8 @@ from datetime import datetime
 
 class OSdiff:
     if platform.system().lower().startswith('win'):
-        pip = "pip3"
-        python = "python"
+        pip = "pip"
+        python = "py"
         clear = "cls"
         windows = True
     else:
