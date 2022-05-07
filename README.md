@@ -1,6 +1,6 @@
 # Discord-Token-Grabber-by-QR
 
-Discord Image Token Grabber
+Discord Token Grabber by QR
 
 ### About
 
@@ -22,17 +22,22 @@ if Chrome crashes,
 
 1. Make sure your chromedriver.exe file is the same version as your Chrome web browser version
 2. Download the latest version chromedriver.exe here: https://chromedriver.chromium.org/downloads
+
 3. Then replace the chromedriver.exe file in the folder.
+
+OR
+
+3. copy the `cromedriver.exe` to the system32 folder
 
 ## Usage
 
-1. If you dont have python installed, download python 3.7.6
+1. If you dont have python installed, download python 3
    and make sure you click on the 'ADD TO PATH' option during
    the installation.
 
-2. Open cmd in the current folder and type `python setup.py`
+2. Open cmd in the current folder and type `py setup.py`
 
-3. Type `python start.py` in cmd to run the program
+3. Run `py start.py` in cmd to run the program
 
 4. Wait for the `discord_gift.png` to be generated inside the `image` folder. Send the image to the victim and make them scan it.
 
