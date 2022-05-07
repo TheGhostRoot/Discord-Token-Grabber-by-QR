@@ -27,8 +27,38 @@ def main():
     options = webdriver.ChromeOptions()
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     options.add_experimental_option('detach', True)
-    driver = webdriver.Chrome(
-        options=options, executable_path=r'chromedriver.exe')
+
+    executable_path = ""
+    if os.name == 'posix':
+        current_dir_file = os.path.join(os.getcwd(), "chromedriver.exe")
+        sys32_dir_file = "C:\\Windows\\System32\\chromedriver.exe"
+        if os.path.isfile(current_dir_file):
+            executable_path = current_dir_file
+        elif os.path.isfile(sys32_dir_file):
+            executable_path = sys32_dir_file
+        else:
+            executable_path = None
+
+    else:
+        current_dir_file = os.path.join(os.getcwd(), "chromedriver")
+        usrbin_file = os.path.join("usr", "bin", "chromedriver")
+        bin_file = os.path.join("bin", "chromedriver")
+        if os.path.isfile(current_dir_file):
+            executable_path = current_dir_file
+        elif os.path.isfile(usrbin_file):
+            executable_path = usrbin_file
+        elif os.path.isfile(bin_file):
+            executable_path = bin_file
+        else:
+            executable_path = None
+
+    if executable_path is None:
+        driver = webdriver.Chrome(options=options)
+    else:
+        driver = webdriver.Chrome(
+            options=options,
+            executable_path=executable_path
+        )
 
     driver.get('https://discord.com/login')
     time.sleep(utitlites.Config.DISCORD_WAIT_TIME)
