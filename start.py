@@ -5,7 +5,7 @@ import base64
 import time
 import os
 from dtg import utitlites
-import requests
+from selenium.webdriver.common.by import By
 
 
 def logo_qr():
@@ -31,7 +31,7 @@ def main():
     options.add_experimental_option('detach', True)
 
     executable_path = ""
-    if os.name == 'posix':
+    if os.name == 'nt':
         current_dir_file = os.path.join(os.getcwd(), "chromedriver.exe")
         sys32_dir_file = "C:\\Windows\\System32\\chromedriver.exe"
         if os.path.isfile(current_dir_file):
@@ -78,13 +78,18 @@ def main():
     print("="*50)
     file = os.path.join(os.getcwd(), 'image', 'qr_code.png')
     print(file)
-    
-    # img_data = base64.b64decode(qr_code.replace('data:image/png;base64,', ''))
-    img_data = requests.get(f"https://discord.com{qr_code}").content
+    # image_element = driver.find_element(by=By.XPATH, value=f"//img[@src='{qr_code}']")
+    image_element = driver.find_element(by=By.XPATH, value=f"//div[@class='qrCodeOverlay_ae8574']")
+    print(image_element)
+    print(dir(image_element))
+    tmp = image_element.screenshot_as_png
+    print(tmp)
+    print(type(tmp))
 
+    with open("file.png", "wb") as file:
+        file.write(tmp)
 
-    with open(file, 'wb') as handler:
-        handler.write(img_data)
+    exit()
 
     discord_login = driver.current_url
     logo_qr()
