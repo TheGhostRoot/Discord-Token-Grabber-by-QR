@@ -13,6 +13,7 @@ from loguru import logger
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import selenium.common.exceptions
 
 from dtg import utitlites
 
@@ -89,10 +90,20 @@ def main():
     logger.debug("Chrome webdriver is ready.")
 
     driver.get('https://discord.com/login')
-    time.sleep(utitlites.Config.DISCORD_WAIT_TIME)
-    logger.success("Loaded discord login page.")
+
+    while True:
+        try:
+            image_element = driver.find_element(by=By.XPATH, value=f"//div[@class='qrCodeOverlay_ae8574']") # of type `selenium.webdriver.remote.webelement.WebElement`
+            time.sleep(3.5) # wait for image to load, else, results in empty gray space
+            original_qr_code_image = image_element.screenshot_as_png # of type `bytes`
+            logger.success("Loaded discord login page.")
+            break
+        except selenium.common.exceptions.NoSuchElementException:
+            logger.info("Page is still loading, retrying in 2 seconds...")
+            time.sleep(2)
 
 
+    # ------------------
     # ------------------
 
     # old (with BeautifulSoup4)
@@ -104,11 +115,14 @@ def main():
     # image_element = driver.find_element(by=By.XPATH, value=f"//img[@src='{qr_code}']")
 
     # new (without BeautifulSoup4)
+    # i moved it up, under the while True loop
     # ---------
-    image_element = driver.find_element(by=By.XPATH, value=f"//div[@class='qrCodeOverlay_ae8574']") # of type `selenium.webdriver.remote.webelement.WebElement`
-    original_qr_code_image = image_element.screenshot_as_png # of type `bytes`
+    # image_element = driver.find_element(by=By.XPATH, value=f"//div[@class='qrCodeOverlay_ae8574']") # of type `selenium.webdriver.remote.webelement.WebElement`
+    # original_qr_code_image = image_element.screenshot_as_png # of type `bytes`
 
     # ------------------
+    # ------------------
+
 
     file = os.path.join(os.getcwd(), 'image', 'qr_code.png')
     with open(file, "wb") as handler:
