@@ -37,7 +37,7 @@ OR
    and make sure you click on the 'ADD TO PATH' option during
    the installation.
 
-2. Open cmd in the current folder and type `py setup.py`
+2. Open cmd in the current folder and run `py -m pip install -r requirements.txt`
 
 3. Run `py token-grabber.py` in cmd to run the program
 
