@@ -5,6 +5,7 @@ import base64
 import time
 import os
 from dtg import utitlites
+import requests
 
 
 def logo_qr():
@@ -66,13 +67,21 @@ def main():
 
     page_source = driver.page_source
 
-    soup = BeautifulSoup(page_source, features='lxml')
+    soup = BeautifulSoup(page_source, features='html.parser')
 
-    div = soup.find('div', {'class': 'qrCode-2R7t9S'})
+    div = soup.find('div', class_='qrCodeOverlay_ae8574')
     qr_code = div.find('img')['src']
-    file = os.path.join(os.getcwd(), 'image', 'qr_code.png')
 
-    img_data = base64.b64decode(qr_code.replace('data:image/png;base64,', ''))
+    print(div)
+    print("="*50)
+    print(qr_code)
+    print("="*50)
+    file = os.path.join(os.getcwd(), 'image', 'qr_code.png')
+    print(file)
+    
+    # img_data = base64.b64decode(qr_code.replace('data:image/png;base64,', ''))
+    img_data = requests.get(f"https://discord.com{qr_code}").content
+
 
     with open(file, 'wb') as handler:
         handler.write(img_data)
@@ -87,7 +96,7 @@ def main():
     while True:
         if discord_login != driver.current_url:
             print('! Grabbing token..')
-            token = driver.execute_script('''
+            token = driver.execute_script(r'''
 var req = webpackJsonp.push([
     [], {
         extra_id: (e, t, r) => e.exports = r
