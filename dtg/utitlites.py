@@ -66,7 +66,7 @@ def clear_screen():
 
 
 def show_logo():
-    print("""
+    print(r"""
         ____ _____ ____ 
         |  _ \_   _/ ___|
         | | | || || |  _ 
