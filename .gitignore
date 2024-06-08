@@ -3,3 +3,4 @@ dtg/__pycache__/*
 __pycache__
 
 *.png
+tmp.*
